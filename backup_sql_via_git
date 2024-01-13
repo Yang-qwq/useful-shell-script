@@ -1,0 +1,22 @@
+#!/bin/sh
+current_timestamp=`date '+%s'`
+
+cd $(cd $(dirname $0);pwd)
+
+for db in mysql phpmyadmin  # 修改此处来选择需要备份的数据库，或者使用`mysqldump -A > $db.sql`也是个不错的选择
+do
+	echo "正在备份数据库 $db"
+	mysqldump -B $db > $db.sql
+done
+
+git add *
+
+if [ -z $1 ]; then
+	git commit -m "auto backup ($current_timestamp)"
+else
+	git commit -m "$1"
+fi
+
+git push
+
+echo "已完成。"

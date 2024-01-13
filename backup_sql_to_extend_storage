@@ -1,0 +1,25 @@
+#!/bin/sh
+current_timestamp=`date '+%s'`
+target_dir=/path/to/your/dir  # 修改此处用于选择目标目录
+
+cd $(cd $(dirname $0);pwd)
+
+for db in img_yang_flarum img_yang_cloudreve mysql phpmyadmin
+do
+	echo "正在备份数据库 $db"
+	mysqldump -B $db > $db.sql
+done
+
+# 检测.sql_backup目录是否创建
+# 当然，批量替换`/.sql_backup`也可以选择备份文件夹的名称
+if [ ! -d $target_dir/.sql_backup ]; then
+	echo "$target_dir/.sql_backup 不存在，正在创建..."
+	mkdir $target_dir/.sql_backup
+fi
+
+# 修改以下两处可以选择每次备份的目录名称
+mkdir $target_dir/.sql_backup/SQL_$current_timestamp
+
+cp *.sql $target_dir/.sql_backup/SQL_$current_timestamp
+
+echo "已完成。"
